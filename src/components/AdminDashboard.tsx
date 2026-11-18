@@ -33,6 +33,7 @@ import type {
   Testimonial,
   UserPublic,
 } from '../types';
+import { apiUrl } from '../utils/api';
 import { computeFinancialSummary } from '../utils/velanzaLogic';
 import { ResilientImage } from './ResilientImage';
 
@@ -129,7 +130,7 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
   const loadOverview = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/overview');
+      const res = await fetch(apiUrl('/api/admin/overview'), { credentials: 'include' });
       if (!res.ok) {
         setError('Admin authentication required.');
         return;
@@ -159,8 +160,9 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
   }, []);
 
   const uploadBinary = async (file: File): Promise<string> => {
-    const res = await fetch('/api/upload', {
+    const res = await fetch(apiUrl('/api/upload'), {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': file.type || 'application/octet-stream',
         'X-Filename': file.name,
@@ -175,8 +177,9 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
   const handleSaveSettings = async (e: FormEvent) => {
     e.preventDefault();
     if (!settings) return;
-    const res = await fetch('/api/admin/settings', {
+    const res = await fetch(apiUrl('/api/admin/settings'), {
       method: 'PUT',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(settings),
     });
@@ -187,8 +190,9 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
 
   const handleAddCourse = async (e: FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/admin/courses', {
+    const res = await fetch(apiUrl('/api/admin/courses'), {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: newCourseTitle,
@@ -208,7 +212,7 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
   };
 
   const handleDeleteCourse = async (id: string) => {
-    await fetch(`/api/admin/courses/${id}`, { method: 'DELETE' });
+    await fetch(apiUrl(`/api/admin/courses/${id}`), { method: 'DELETE', credentials: 'include' });
     await loadOverview();
     flash('Course removed.');
   };
@@ -234,8 +238,9 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
       setError('Select course, lesson title, and upload a video or provide a URL.');
       return;
     }
-    const res = await fetch(`/api/admin/courses/${videoCourseId}/lessons`, {
+    const res = await fetch(apiUrl(`/api/admin/courses/${videoCourseId}/lessons`), {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         moduleTitle: videoModuleTitle,
@@ -254,8 +259,9 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
   };
 
   const handleVerifyEnrollment = async (id: string, status: 'approved' | 'rejected') => {
-    const res = await fetch(`/api/admin/enrollments/${id}/verify`, {
+    const res = await fetch(apiUrl(`/api/admin/enrollments/${id}/verify`), {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
     });
@@ -267,8 +273,9 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
 
   const handleAddStudent = async (e: FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/admin/students', {
+    const res = await fetch(apiUrl('/api/admin/students'), {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: stuName,
@@ -290,8 +297,9 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
   };
 
   const handleUpdateStudent = async (id: string, patch: Partial<UserPublic>) => {
-    await fetch(`/api/admin/students/${id}`, {
+    await fetch(apiUrl(`/api/admin/students/${id}`), {
       method: 'PUT',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(patch),
     });
@@ -301,8 +309,9 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
 
   const handleAddClient = async (e: FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/admin/clients', {
+    const res = await fetch(apiUrl('/api/admin/clients'), {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: cliName,
@@ -325,8 +334,9 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
   };
 
   const handleClientAction = async (clientId: string, action: string, payload: Record<string, unknown>) => {
-    await fetch(`/api/admin/clients/${clientId}/action`, {
+    await fetch(apiUrl(`/api/admin/clients/${clientId}/action`), {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action, payload }),
     });
@@ -340,8 +350,9 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
     try {
       const text = await file.text();
       const parsed = JSON.parse(text);
-      const res = await fetch('/api/admin/restore', {
+      const res = await fetch(apiUrl('/api/admin/restore'), {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(parsed),
       });
@@ -1284,7 +1295,7 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
                           <button
                             type="button"
                             onClick={async () => {
-                              await fetch(`/api/admin/support/${sr.id}/resolve`, { method: 'POST' });
+                              await fetch(apiUrl(`/api/admin/support/${sr.id}/resolve`), { method: 'POST', credentials: 'include' });
                               await loadOverview();
                               flash('Support request resolved.');
                             }}
@@ -1402,8 +1413,9 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
                 <form
                   onSubmit={async (e) => {
                     e.preventDefault();
-                    await fetch('/api/admin/blog', {
+                    await fetch(apiUrl('/api/admin/blog'), {
                       method: 'POST',
+                      credentials: 'include',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ title: blogTitle, category: blogCat, content: blogContent }),
                     });
@@ -1452,8 +1464,9 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
                 <form
                   onSubmit={async (e) => {
                     e.preventDefault();
-                    await fetch('/api/admin/gallery', {
+                    await fetch(apiUrl('/api/admin/gallery'), {
                       method: 'POST',
+                      credentials: 'include',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({
                         title: galTitle,
@@ -1511,8 +1524,9 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
                 <form
                   onSubmit={async (e) => {
                     e.preventDefault();
-                    await fetch('/api/admin/testimonials', {
+                    await fetch(apiUrl('/api/admin/testimonials'), {
                       method: 'POST',
+                      credentials: 'include',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({
                         name: testName,
@@ -1567,8 +1581,9 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
                   <form
                     onSubmit={async (e) => {
                       e.preventDefault();
-                      await fetch('/api/admin/services', {
+                      await fetch(apiUrl('/api/admin/services'), {
                         method: 'POST',
+                        credentials: 'include',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                           title: srvTitle,
@@ -1612,8 +1627,9 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
                   <form
                     onSubmit={async (e) => {
                       e.preventDefault();
-                      await fetch('/api/admin/faqs', {
+                      await fetch(apiUrl('/api/admin/faqs'), {
                         method: 'POST',
+                        credentials: 'include',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ question: faqQ, answer: faqA }),
                       });
@@ -1688,7 +1704,7 @@ export function AdminDashboard({ onBackHome, onSiteUpdated, onLogout }: AdminDas
               </div>
               <div className="flex flex-wrap items-center gap-4">
                 <a
-                  href="/api/admin/backup"
+                  href={apiUrl('/api/admin/backup')}
                   download
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-900 hover:bg-emerald-800 text-white text-xs font-semibold rounded-lg"
                 >

@@ -1,6 +1,7 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { CheckCircle2, Upload, X } from 'lucide-react';
 import type { Course, SiteSettings, UserPublic } from '../types';
+import { apiUrl } from '../utils/api';
 import { validateEnrollmentForm } from '../utils/velanzaLogic';
 
 interface EnrollmentModalProps {
@@ -47,8 +48,9 @@ export function EnrollmentModal({
     setUploading(true);
     setError('');
     try {
-      const res = await fetch('/api/upload', {
+      const res = await fetch(apiUrl('/api/upload'), {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': file.type || 'application/octet-stream',
           'X-Filename': file.name,
@@ -87,8 +89,9 @@ export function EnrollmentModal({
 
     setSubmitting(true);
     try {
-      const res = await fetch('/api/enrollments', {
+      const res = await fetch(apiUrl('/api/enrollments'), {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           courseId: selectedCourse?.id,

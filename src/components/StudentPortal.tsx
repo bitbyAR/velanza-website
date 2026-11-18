@@ -12,6 +12,7 @@ import {
   Save,
 } from 'lucide-react';
 import type { Course, CourseLesson, Enrollment, StudentProgressRecord, UserPublic } from '../types';
+import { apiUrl } from '../utils/api';
 import { calculateCourseProgress } from '../utils/velanzaLogic';
 import { VideoPlayerSurface } from './VideoPlayerSurface';
 
@@ -40,7 +41,7 @@ export function StudentPortal({ onBackHome, onOpenEnroll, onLogout }: StudentPor
   const loadPortal = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/student/portal');
+      const res = await fetch(apiUrl('/api/student/portal'), { credentials: 'include' });
       if (!res.ok) return;
       const data = await res.json();
       setUser(data.user);
@@ -96,8 +97,9 @@ export function StudentPortal({ onBackHome, onOpenEnroll, onLogout }: StudentPor
     note?: string;
     positionSeconds?: number;
   }) => {
-    const res = await fetch('/api/student/progress', {
+    const res = await fetch(apiUrl('/api/student/progress'), {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });

@@ -9,6 +9,7 @@ import {
   Send,
 } from 'lucide-react';
 import type { ClientAccount, SupportRequest } from '../types';
+import { apiUrl } from '../utils/api';
 import { summarizeClientMetrics } from '../utils/velanzaLogic';
 
 interface ClientPortalProps {
@@ -29,7 +30,7 @@ export function ClientPortal({ onBackHome, onLogout }: ClientPortalProps) {
   const loadClientPortal = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/client/dashboard');
+      const res = await fetch(apiUrl('/api/client/dashboard'), { credentials: 'include' });
       if (!res.ok) {
         const d = await res.json();
         setError(d.error || 'Could not load client portal.');
@@ -52,8 +53,9 @@ export function ClientPortal({ onBackHome, onLogout }: ClientPortalProps) {
     setSubmitting(true);
     setSubmitNotice('');
     try {
-      const res = await fetch('/api/client/support', {
+      const res = await fetch(apiUrl('/api/client/support'), {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ subject, message }),
       });
@@ -70,7 +72,7 @@ export function ClientPortal({ onBackHome, onLogout }: ClientPortalProps) {
   };
 
   const handleMarkNotificationsRead = async () => {
-    await fetch('/api/client/notifications/read', { method: 'POST' });
+    await fetch(apiUrl('/api/client/notifications/read'), { method: 'POST', credentials: 'include' });
     setClient((prev) =>
       prev
         ? {

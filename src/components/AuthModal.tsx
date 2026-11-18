@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Lock, Mail, Phone, User, X } from 'lucide-react';
 import type { UserPublic } from '../types';
+import { apiUrl } from '../utils/api';
 
 interface AuthModalProps {
   open: boolean;
@@ -33,9 +34,10 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps) {
           ? { email, password }
           : { name, email, phone, password, role, businessName, website_hp: honeypot };
 
-      const res = await fetch(endpoint, {
+      const res = await fetch(apiUrl(endpoint), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(payload),
       });
       const data = await res.json();

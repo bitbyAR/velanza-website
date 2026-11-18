@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import type { BlogPost, Course, LanguageCode, PublicSitePayload } from '../types';
 import type { TranslationDictionary } from '../utils/i18n';
+import { apiUrl } from '../utils/api';
 import { filterCatalogItems, validateContactForm } from '../utils/velanzaLogic';
 import { ResilientImage } from './ResilientImage';
 import { VideoPlayerSurface } from './VideoPlayerSurface';
@@ -138,7 +139,7 @@ export function PublicHome({
     }
     setContactSending(true);
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch(apiUrl('/api/contact'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
